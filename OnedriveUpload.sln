@@ -3,9 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
 VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OnedriveUpload", "OnedriveUpload.csproj", "{075E125D-E87B-4B7F-9C0D-151AC48E9C9A}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OnedriveUpload", "OnedriveUpload\OnedriveUpload.csproj", "{075E125D-E87B-4B7F-9C0D-151AC48E9C9A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OnedriveUploadWinForms", "..\OnedriveUploadWinForms\OnedriveUploadWinForms.csproj", "{245A2ABF-0FF6-4073-BF82-51880CBB914A}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OnedriveUploadWinForms", "OnedriveUploadWinForms\OnedriveUploadWinForms.csproj", "{245A2ABF-0FF6-4073-BF82-51880CBB914A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
