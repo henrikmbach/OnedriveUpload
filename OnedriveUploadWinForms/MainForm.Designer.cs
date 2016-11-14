@@ -44,6 +44,11 @@
       this.lblCurrentFolder = new System.Windows.Forms.Label();
       this.label4 = new System.Windows.Forms.Label();
       this.btnStopCopyingFiles = new System.Windows.Forms.Button();
+      this.label2 = new System.Windows.Forms.Label();
+      this.txtFilesToSkip = new System.Windows.Forms.TextBox();
+      this.label5 = new System.Windows.Forms.Label();
+      this.lblFile = new System.Windows.Forms.Label();
+      this.chkSkipCopyingCreatingFiles = new System.Windows.Forms.CheckBox();
       this.SuspendLayout();
       // 
       // btnSignIn
@@ -119,12 +124,12 @@
       this.textSourceFolder.Name = "textSourceFolder";
       this.textSourceFolder.Size = new System.Drawing.Size(353, 20);
       this.textSourceFolder.TabIndex = 7;
-      this.textSourceFolder.Text = "C:\\Temp\\OnedriveUpload";
+      this.textSourceFolder.Text = "c:\\temp\\musik";
       // 
       // btnStartCopyingFiles
       // 
       this.btnStartCopyingFiles.Enabled = false;
-      this.btnStartCopyingFiles.Location = new System.Drawing.Point(12, 275);
+      this.btnStartCopyingFiles.Location = new System.Drawing.Point(13, 301);
       this.btnStartCopyingFiles.Name = "btnStartCopyingFiles";
       this.btnStartCopyingFiles.Size = new System.Drawing.Size(121, 23);
       this.btnStartCopyingFiles.TabIndex = 8;
@@ -182,7 +187,7 @@
       // btnStopCopyingFiles
       // 
       this.btnStopCopyingFiles.Enabled = false;
-      this.btnStopCopyingFiles.Location = new System.Drawing.Point(145, 275);
+      this.btnStopCopyingFiles.Location = new System.Drawing.Point(145, 301);
       this.btnStopCopyingFiles.Name = "btnStopCopyingFiles";
       this.btnStopCopyingFiles.Size = new System.Drawing.Size(121, 23);
       this.btnStopCopyingFiles.TabIndex = 15;
@@ -190,11 +195,57 @@
       this.btnStopCopyingFiles.UseVisualStyleBackColor = true;
       this.btnStopCopyingFiles.Click += new System.EventHandler(this.btnStopCopyingFiles_Click);
       // 
+      // label2
+      // 
+      this.label2.Location = new System.Drawing.Point(12, 165);
+      this.label2.Name = "label2";
+      this.label2.Size = new System.Drawing.Size(129, 23);
+      this.label2.TabIndex = 16;
+      this.label2.Text = "Files to skip:";
+      // 
+      // txtFilesToSkip
+      // 
+      this.txtFilesToSkip.Location = new System.Drawing.Point(142, 162);
+      this.txtFilesToSkip.Name = "txtFilesToSkip";
+      this.txtFilesToSkip.Size = new System.Drawing.Size(429, 20);
+      this.txtFilesToSkip.TabIndex = 17;
+      this.txtFilesToSkip.Text = "desktop.ini; *.info";
+      // 
+      // label5
+      // 
+      this.label5.Location = new System.Drawing.Point(12, 275);
+      this.label5.Name = "label5";
+      this.label5.Size = new System.Drawing.Size(121, 23);
+      this.label5.TabIndex = 19;
+      this.label5.Text = "File:";
+      // 
+      // lblFile
+      // 
+      this.lblFile.Location = new System.Drawing.Point(142, 275);
+      this.lblFile.Name = "lblFile";
+      this.lblFile.Size = new System.Drawing.Size(429, 23);
+      this.lblFile.TabIndex = 18;
+      // 
+      // chkSkipCopyingCreatingFiles
+      // 
+      this.chkSkipCopyingCreatingFiles.AutoSize = true;
+      this.chkSkipCopyingCreatingFiles.Location = new System.Drawing.Point(272, 305);
+      this.chkSkipCopyingCreatingFiles.Name = "chkSkipCopyingCreatingFiles";
+      this.chkSkipCopyingCreatingFiles.Size = new System.Drawing.Size(170, 17);
+      this.chkSkipCopyingCreatingFiles.TabIndex = 20;
+      this.chkSkipCopyingCreatingFiles.Text = "Skip creating and copying files";
+      this.chkSkipCopyingCreatingFiles.UseVisualStyleBackColor = true;
+      // 
       // MainForm
       // 
       this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
       this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-      this.ClientSize = new System.Drawing.Size(581, 310);
+      this.ClientSize = new System.Drawing.Size(581, 348);
+      this.Controls.Add(this.chkSkipCopyingCreatingFiles);
+      this.Controls.Add(this.label5);
+      this.Controls.Add(this.lblFile);
+      this.Controls.Add(this.txtFilesToSkip);
+      this.Controls.Add(this.label2);
       this.Controls.Add(this.btnStopCopyingFiles);
       this.Controls.Add(this.label4);
       this.Controls.Add(this.lblCurrentFolder);
@@ -237,6 +288,11 @@
     private System.Windows.Forms.Label lblCurrentFolder;
     private System.Windows.Forms.Label label4;
     private System.Windows.Forms.Button btnStopCopyingFiles;
+    private System.Windows.Forms.Label label2;
+    private System.Windows.Forms.TextBox txtFilesToSkip;
+    private System.Windows.Forms.Label label5;
+    private System.Windows.Forms.Label lblFile;
+    private System.Windows.Forms.CheckBox chkSkipCopyingCreatingFiles;
   }
 }
 

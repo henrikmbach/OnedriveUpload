@@ -7,4 +7,4 @@ TODO:
     der allerede eksisterer. Det sker fordi musikFolder objektet ikke er blevet opdateret, så det indeholder kun de folder var inden man kørte første 
     gang.
 
--
+- Ryd op i koden, så der ikke skal trykkes på alle knapper for at hente musik folder osv. mm.
