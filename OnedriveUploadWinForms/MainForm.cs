@@ -22,7 +22,6 @@ namespace OnedriveUploadWinForms
 
     string[] scopes = { "onedrive.readwrite", "wl.signin" };
 
-    // TODO fix at musikFolder ikke er en global
     // Onedrive online folder for musik
     Item musikFolder;
 
@@ -35,7 +34,7 @@ namespace OnedriveUploadWinForms
     {
       InitializeComponent();
 
-      // load msaClientId from settings.txt
+      // load msaClientId from secrets.txt in output folder
       string[] lines = System.IO.File.ReadAllLines(Path.Combine(exeDirectory, "secrets.txt"));
       if (lines.Length != 1)
         throw new ArgumentException("secrets.txt should only have one line");
@@ -47,6 +46,140 @@ namespace OnedriveUploadWinForms
       msaClientId = content[1];
     }
 
+    #region UI methods
+    private async void btnSignIn_Click(object sender, EventArgs e)
+    {
+      btnSignIn.Enabled = false;
+      if (await SignIn())
+      {
+        lblStatus.Text = "Signed in";
+        UpdateSignedInUi(true);
+      }
+    }
+
+    private void btnSignOut_Click(object sender, EventArgs e)
+    {
+      if (this.oneDriveClient != null)
+      {
+        this.oneDriveClient = null;
+      }
+      musikFolder = null;
+      UpdateSignedInUi(false);
+    }
+
+    private async void btnFindMusikFolder_Click(object sender, EventArgs e)
+    {
+      btnFindMusikFolder.Enabled = false;
+      lblMusikFoundStatus.Text = "...";
+      var rootFolder = await FindRootFolder("musik");
+      if (rootFolder != null)
+      {
+        musikFolder = rootFolder;
+        lblMusikFoundStatus.Text = "Musik folder was found.";
+      }
+      else
+      {
+        btnFindMusikFolder.Enabled = true;
+      }
+    }
+
+    private void btnCheckSourceFolder_Click(object sender, EventArgs e)
+    {
+      if (!string.IsNullOrWhiteSpace(textSourceFolder.Text))
+      {
+        bool exists = Directory.Exists(textSourceFolder.Text);
+        if (exists)
+        {
+          lblSourceFolder.Text = "Der er adgang til source folderen";
+        }
+      }
+    }
+
+    private void btnStartCopyingFiles_Click(object sender, EventArgs e)
+    {
+      if (musikFolder == null)
+      {
+        MessageBox.Show("'Musik' folder was not found. Please fix!");
+        return;
+      }
+
+      string[] filesToSkip = null;
+      if (!string.IsNullOrWhiteSpace(txtFilesToSkip.Text))
+      {
+        filesToSkip = txtFilesToSkip.Text.Split(';');
+        for (int i = 0; i < filesToSkip.Length; i++)
+        {
+          filesToSkip[i] = filesToSkip[i].Trim();
+        }
+      }
+
+      btnStartCopyingFiles.Enabled = false;
+      btnStopCopyingFiles.Enabled = true;
+      chkSkipCopyingCreatingFiles.Enabled = false;
+      lblNumberOfFilesCopied.Text = "0";
+      lblMBCopied.Text = "0";
+      lblCurrentFolder.Text = "";
+
+      stop = false;
+
+      CopyFiles(textSourceFolder.Text, musikFolder, filesToSkip);
+    }
+
+    private void btnStopCopyingFiles_Click(object sender, EventArgs e)
+    {
+      btnStartCopyingFiles.Enabled = false;
+      btnStopCopyingFiles.Enabled = false;
+      stop = true;
+    }
+
+    private void UpdateSignedInUi(bool signedIn)
+    {
+      btnSignIn.Enabled = !signedIn;
+      btnSignOut.Enabled = signedIn;
+      btnCheckSourceFolder.Enabled = signedIn;
+      btnFindMusikFolder.Enabled = signedIn;
+      btnStartCopyingFiles.Enabled = signedIn;
+
+      textSourceFolder.Enabled = signedIn;
+    }
+    private void PresentServiceException(Exception exception)
+    {
+      string message = null;
+      var oneDriveException = exception as ServiceException;
+      if (oneDriveException == null)
+      {
+        message = exception.Message;
+      }
+      else
+      {
+        message = string.Format("{0}{1}", Environment.NewLine, oneDriveException.ToString());
+      }
+
+      MessageBox.Show(string.Format("OneDrive reported the following error: {0}", message));
+    }
+
+    /// <summary>
+    /// Update ui with progress on number of files copied and bytes copied
+    /// </summary>
+    private void UpdateProgress(int numberOfFilesCopied, long bytesCopied)
+    {
+      // Has to copy value into local field, because anonymous method cannot be called with parameter that is ref
+      int nonRefNumberOfFilesCopied = numberOfFilesCopied;
+      long nonRefBytesCopied = bytesCopied;
+      lblNumberOfFilesCopied.Invoke(
+        (MethodInvoker)delegate { lblNumberOfFilesCopied.Text = nonRefNumberOfFilesCopied.ToString(); });
+      string byteString;
+      if (nonRefBytesCopied < 102400)
+        byteString = $"{(float)nonRefBytesCopied / 1024:0.0} kB";
+      else if (nonRefBytesCopied < 102400000)
+        byteString = $"{(float)nonRefBytesCopied / 1024 / 1024:0.0} MB";
+      else
+        byteString = $"{(float)nonRefBytesCopied / 1024 / 1024 / 1024:0.0} GB";
+      lblMBCopied.Invoke((MethodInvoker)delegate { lblMBCopied.Text = byteString; });
+    }
+    #endregion
+
+    #region OneDrive api methods
     private async Task<bool> SignIn()
     {
       Task authTask;
@@ -85,68 +218,6 @@ namespace OnedriveUploadWinForms
       return true;
     }
 
-    private static void PresentServiceException(Exception exception)
-    {
-      string message = null;
-      var oneDriveException = exception as ServiceException;
-      if (oneDriveException == null)
-      {
-        message = exception.Message;
-      }
-      else
-      {
-        message = string.Format("{0}{1}", Environment.NewLine, oneDriveException.ToString());
-      }
-
-      MessageBox.Show(string.Format("OneDrive reported the following error: {0}", message));
-    }
-
-    private void UpdateSignedInUi(bool signedIn)
-    {
-      btnSignIn.Enabled = !signedIn;
-      btnSignOut.Enabled = signedIn;
-      btnCheckSourceFolder.Enabled = signedIn;
-      btnFindMusikFolder.Enabled = signedIn;
-      btnStartCopyingFiles.Enabled = signedIn;
-
-      textSourceFolder.Enabled = signedIn;
-    }
-
-    private void btnSignOut_Click(object sender, EventArgs e)
-    {
-      if (this.oneDriveClient != null)
-      {
-        this.oneDriveClient = null;
-      }
-      UpdateSignedInUi(false);
-    }
-
-    private async void btnSignIn_Click(object sender, EventArgs e)
-    {
-      btnSignIn.Enabled = false;
-      if (await SignIn())
-      {
-        lblStatus.Text = "Signed in";
-        UpdateSignedInUi(true);
-      }
-    }
-
-    private async void btnFindMusikFolder_Click(object sender, EventArgs e)
-    {
-      btnFindMusikFolder.Enabled = false;
-      lblMusikFoundStatus.Text = "...";
-      var rootFolder = await FindRootFolder("musik");
-      if (rootFolder != null)
-      {
-        musikFolder = rootFolder;
-        lblMusikFoundStatus.Text = "Musik folder was found.";
-      }
-      else
-      {
-        btnFindMusikFolder.Enabled = true;
-      }
-    }
-
     private async Task<Item> FindRootFolder(string nameOfRootFolder)
     {
       Item rootFolder;
@@ -172,42 +243,6 @@ namespace OnedriveUploadWinForms
         Debug.Assert(false);
       }
       return rootFolder;
-    }
-
-    private void btnCheckSourceFolder_Click(object sender, EventArgs e)
-    {
-      if (!string.IsNullOrWhiteSpace(textSourceFolder.Text))
-      {
-        bool exists = Directory.Exists(textSourceFolder.Text);
-        if (exists)
-        {
-          lblSourceFolder.Text = "Der er adgang til source folderen";
-        }
-      }
-    }
-
-    private void btnStartCopyingFiles_Click(object sender, EventArgs e)
-    {
-      string[] filesToSkip = null;
-      if (!string.IsNullOrWhiteSpace(txtFilesToSkip.Text))
-      {
-        filesToSkip = txtFilesToSkip.Text.Split(';');
-        for (int i = 0; i < filesToSkip.Length; i++)
-        {
-          filesToSkip[i] = filesToSkip[i].Trim();
-        }
-      }
-
-      btnStartCopyingFiles.Enabled = false;
-      btnStopCopyingFiles.Enabled = true;
-      chkSkipCopyingCreatingFiles.Enabled = false;
-      lblNumberOfFilesCopied.Text = "0";
-      lblMBCopied.Text = "0";
-      lblCurrentFolder.Text = "";
-
-      stop = false;
-
-      CopyFiles(textSourceFolder.Text, musikFolder, filesToSkip);
     }
 
     /// <summary>
@@ -426,33 +461,7 @@ namespace OnedriveUploadWinForms
         }
       }
     }
-
-    /// <summary>
-    /// Update ui with progress on number of files copied and bytes copied
-    /// </summary>
-    private void UpdateProgress(int numberOfFilesCopied, long bytesCopied)
-    {
-      // Has to copy value into local field, because anonymous method cannot be called with parameter that is ref
-      int nonRefNumberOfFilesCopied = numberOfFilesCopied;
-      long nonRefBytesCopied = bytesCopied;
-      lblNumberOfFilesCopied.Invoke(
-        (MethodInvoker)delegate { lblNumberOfFilesCopied.Text = nonRefNumberOfFilesCopied.ToString(); });
-      string byteString;
-      if (nonRefBytesCopied < 102400)
-        byteString = $"{(float)nonRefBytesCopied / 1024:0.0} kB";
-      else if (nonRefBytesCopied < 102400000)
-        byteString = $"{(float)nonRefBytesCopied / 1024 / 1024:0.0} MB";
-      else
-        byteString = $"{(float)nonRefBytesCopied / 1024 / 1024 / 1024:0.0} GB";
-      lblMBCopied.Invoke((MethodInvoker)delegate { lblMBCopied.Text = byteString; });
-    }
-
-    private void btnStopCopyingFiles_Click(object sender, EventArgs e)
-    {
-      btnStartCopyingFiles.Enabled = false;
-      btnStopCopyingFiles.Enabled = false;
-      stop = true;
-    }
+    #endregion
 
     /// <summary>
     /// Include proper date-time format when logging
