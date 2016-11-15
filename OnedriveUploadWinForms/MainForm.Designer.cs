@@ -28,6 +28,7 @@
     /// </summary>
     private void InitializeComponent()
     {
+      System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
       this.btnSignIn = new System.Windows.Forms.Button();
       this.lblStatus = new System.Windows.Forms.Label();
       this.btnSignOut = new System.Windows.Forms.Button();
@@ -209,7 +210,7 @@
       this.txtFilesToSkip.Name = "txtFilesToSkip";
       this.txtFilesToSkip.Size = new System.Drawing.Size(429, 20);
       this.txtFilesToSkip.TabIndex = 17;
-      this.txtFilesToSkip.Text = "desktop.ini; *.info";
+      this.txtFilesToSkip.Text = "desktop.ini; *.info; thumbs.db";
       // 
       // label5
       // 
@@ -263,6 +264,7 @@
       this.Controls.Add(this.lblStatus);
       this.Controls.Add(this.btnSignIn);
       this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
+      this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
       this.Name = "MainForm";
       this.Text = "Onedrive Upload by Henrik Bach";
       this.ResumeLayout(false);

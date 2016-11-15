@@ -64,6 +64,8 @@ namespace OnedriveUploadWinForms
         this.oneDriveClient = null;
       }
       musikFolder = null;
+      lblMusikFoundStatus.Text = "n/a";
+      lblSourceFolder.Text = "n/a";
       UpdateSignedInUi(false);
     }
 
@@ -433,7 +435,7 @@ namespace OnedriveUploadWinForms
       {
         try
         {
-          using (var contentStream = new FileStream(file, FileMode.Open))
+          using (var contentStream = new FileStream(file, FileMode.Open, FileAccess.Read))
           {
             // Stream is disposed after putting it to OneDrive - therefore get length of it before putting
             long streamLength = contentStream.Length;
